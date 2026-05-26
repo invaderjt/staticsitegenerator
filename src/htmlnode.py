@@ -1,3 +1,5 @@
+from textnode import TextType, TextNode
+
 class HTMLNode():
     def __init__(self, tag: str | None = None, value: str | None = None, children: list[HTMLNode] | None = None, props: dict[str, str] | None = None):
         self.tag = tag
@@ -67,4 +69,27 @@ class ParentNode(HTMLNode):
 
 
 def text_node_to_html_node(text_node):
-    
+    tag = None
+    value = None
+    props = None
+    match text_node.text_type:
+        case TextType.TEXT:
+            value = text_node.text
+        case TextType.BOLD:
+            tag = "b"
+            value = text_node.text
+        case TextType.ITALIC:
+            tag = "i"
+            value = text_node.text
+        case TextType.CODE:
+            tag = "code"
+            value = text_node.text
+        case TextType.LINK:
+            tag = "a"
+            value = text_node.text
+            props = {"href" : text_node.url}
+        case TextType.IMAGE:
+            tag = "img"
+            value = ""
+            props = {"src" : text_node.url, "alt" : text_node.text}
+    return LeafNode(tag, value, props)
