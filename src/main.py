@@ -35,16 +35,35 @@ def generate_page(from_path, template_path, dest_path):
     html_string = html_node.to_html()
     new_template = template.replace("{{ Title }}", title)
     final_template = new_template.replace("{{ Content }}", html_string)
+    dest_dir_path = os.path.dirname(dest_path)
+    if dest_dir_path != "":
+        os.makedirs(dest_dir_path, exist_ok=True)
     with open(dest_path, 'x') as f:
         f.write(final_template)
 
+def page_maker(from_dir, template_path, dest_dir):
+    if not os.path.exists(from_dir):
+        raise Exception("Directory does not exist")
+    to_do = os.listdir(from_dir)
+    for item in to_do:
+        from_path = os.path.join(from_dir, item)
+        to_path = os.path.join(dest_dir, item)
+        if os.path.isfile(from_path):
+            if item.endswith(".md"):
+                dest_file = os.path.splitext(item)[0] + ".html"
+                generate_page(from_path, template_path, os.path.join(dest_dir, dest_file))
+        elif os.path.isdir(from_path):
+            page_maker(from_path, template_path, to_path)
 
-    
+dir_path_static = "./static"
+dir_path_public = "./public"
+dir_path_content = "./content"
+template_path = "./template.html"
 
 def main():
     copy_folder_to_folder("./static", "./public")
-    generate_page("./content/index.md", "template.html", "./public/index.html")
-
+    page_maker(dir_path_content, template_path, dir_path_public)
+    #generate_page(os.path.join(dir_path_content, "index.md"), template_path, os.path.join(dir_path_public, "index.html"))
 
 
 
