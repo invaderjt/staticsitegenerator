@@ -91,6 +91,7 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
                 new_nodes.append(TextNode(text_to_split, TextType.TEXT))
     return new_nodes
 
+
 def text_to_textnodes(text):
     starting_text = [TextNode(text, TextType.TEXT)]
     nodes = split_nodes_delimiter(starting_text, "**", TextType.BOLD)

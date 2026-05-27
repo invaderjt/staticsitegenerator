@@ -1,4 +1,4 @@
-from textnode import TextType, TextNode
+from textnode import TextType
 
 class HTMLNode():
     def __init__(self, tag: str | None = None, value: str | None = None, children: list[HTMLNode] | None = None, props: dict[str, str] | None = None):
@@ -93,3 +93,4 @@ def text_node_to_html_node(text_node):
             value = ""
             props = {"src" : text_node.url, "alt" : text_node.text}
     return LeafNode(tag, value, props)
+
