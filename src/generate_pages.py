@@ -24,7 +24,7 @@ def extract_title(markdown: str):
             return line[2:].strip()
     raise Exception("No header found")
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     with open(from_path) as f:
         markdown = f.read()
@@ -33,15 +33,17 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(markdown)
     html_node = markdown_to_html_node(markdown)
     html_string = html_node.to_html()
-    new_template = template.replace("{{ Title }}", title)
-    final_template = new_template.replace("{{ Content }}", html_string)
+    template = template.replace("{{ Title }}", title)
+    template = template.replace("{{ Content }}", html_string)
+    template = template.replace('href="/', f'href="{basepath}')
+    template = template.replace('src="/', f'src="{basepath}')
     dest_dir_path = os.path.dirname(dest_path)
     if dest_dir_path != "":
         os.makedirs(dest_dir_path, exist_ok=True)
     with open(dest_path, 'x') as f:
-        f.write(final_template)
+        f.write(template)
 
-def page_maker(from_dir, template_path, dest_dir):
+def page_maker(from_dir, template_path, dest_dir, basepath):
     if not os.path.exists(from_dir):
         raise Exception("Directory does not exist")
     to_do = os.listdir(from_dir)
@@ -51,6 +53,6 @@ def page_maker(from_dir, template_path, dest_dir):
         if os.path.isfile(from_path):
             if item.endswith(".md"):
                 dest_file = os.path.splitext(item)[0] + ".html"
-                generate_page(from_path, template_path, os.path.join(dest_dir, dest_file))
+                generate_page(from_path, template_path, os.path.join(dest_dir, dest_file), basepath)
         elif os.path.isdir(from_path):
-            page_maker(from_path, template_path, to_path)
+            page_maker(from_path, template_path, to_path, basepath)
